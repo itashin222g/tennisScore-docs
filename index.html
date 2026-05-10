@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tennis Score Watch</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #101511;
+      --card: #f7f4ea;
+      --ink: #172016;
+      --muted: #5d6a5a;
+      --line: #d8d2c2;
+      --accent: #2f7d4f;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(70, 141, 89, 0.35), transparent 32rem),
+        linear-gradient(135deg, #101511, #253428);
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+    }
+
+    main {
+      width: min(38rem, calc(100vw - 2rem));
+      box-sizing: border-box;
+      padding: 2.4rem;
+      border: 1px solid var(--line);
+      border-radius: 1.2rem;
+      background: var(--card);
+      box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.28);
+    }
+
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(2rem, 8vw, 4.4rem);
+      line-height: 0.92;
+      letter-spacing: -0.07em;
+    }
+
+    p {
+      margin: 0.8rem 0 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.65;
+    }
+
+    a {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration-thickness: 0.08em;
+      text-underline-offset: 0.18em;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Tennis Score Watch</h1>
+    <p>A simple Wear OS scoring companion for tennis matches.</p>
+    <p><a href="privacy-policy.html">Privacy Policy</a></p>
+  </main>
+</body>
+</html>
