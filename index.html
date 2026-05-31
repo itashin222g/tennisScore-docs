@@ -285,11 +285,16 @@
       background: var(--panel);
     }
 
-    .gesture .arrow {
+    .gesture .control-label {
+      width: fit-content;
+      padding: 5px 9px;
+      border: 1px solid currentColor;
+      border-radius: 6px;
       color: var(--yellow);
-      font-size: 2.4rem;
+      font-size: 0.78rem;
       font-weight: 900;
       line-height: 1;
+      letter-spacing: 0;
     }
 
     .gesture strong {
@@ -559,28 +564,28 @@
           </div>
           <div class="gesture-panel" aria-label="操作方法一覧">
             <div class="gesture">
-              <span class="arrow">→</span>
+              <span class="control-label">LEFT TAP</span>
               <div>
                 <strong>You +1 point</strong>
                 <p>画面の左側をタップして、自分のポイントを追加します。</p>
               </div>
             </div>
             <div class="gesture">
-              <span class="arrow">←</span>
+              <span class="control-label">RIGHT TAP</span>
               <div>
                 <strong>Opponent +1 point</strong>
                 <p>画面の右側をタップして、相手のポイントを追加します。</p>
               </div>
             </div>
             <div class="gesture">
-              <span class="arrow">↑</span>
+              <span class="control-label">DOWN SWIPE</span>
               <div>
                 <strong>Menu</strong>
                 <p>上から下へスワイプして、設定、履歴、サマリーなどを開きます。</p>
               </div>
             </div>
             <div class="gesture">
-              <span class="arrow">↓</span>
+              <span class="control-label">UP SWIPE</span>
               <div>
                 <strong>Undo</strong>
                 <p>下から上へスワイプして、直前の操作を取り消します。</p>
