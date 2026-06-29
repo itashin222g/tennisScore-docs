@@ -1,51 +1,102 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" role="img" aria-labelledby="title desc">
   <title id="title">TennisScore feature illustration</title>
   <desc id="desc">A visual flow from scoring to point reason, summary, presets, and match history.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#101512"/>
-      <stop offset="1" stop-color="#050706"/>
+    <linearGradient id="bgF" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7faf8"/>
+      <stop offset="1" stop-color="#eaf5ec"/>
     </linearGradient>
-    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#202521"/>
-      <stop offset="1" stop-color="#111412"/>
+    <linearGradient id="cardF" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#fafcfa"/>
     </linearGradient>
-    <marker id="flow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto">
-      <path d="M1 1 L11 6 L1 11 Z" fill="#4eff62"/>
-    </marker>
+    <filter id="cardSh" x="-8%" y="-8%" width="116%" height="124%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#1a3320" flood-opacity="0.07"/>
+    </filter>
+    <filter id="iconGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
-  <rect width="900" height="560" rx="28" fill="url(#bg)"/>
-  <g fill="none" stroke="#4eff62" stroke-width="8" stroke-linecap="round" marker-end="url(#flow)" opacity="0.9">
-    <path d="M256 164 H366"/>
-    <path d="M536 164 H646"/>
-    <path d="M450 244 V318"/>
-    <path d="M256 396 H366"/>
-    <path d="M536 396 H646"/>
+  <rect width="900" height="480" rx="20" fill="url(#bgF)"/>
+
+  <!-- Connecting lines -->
+  <g fill="none" stroke="#2e9e4e" stroke-width="2" opacity="0.25" stroke-dasharray="6 4">
+    <path d="M250 180 C320 180 320 120 390 120"/>
+    <path d="M250 180 C320 180 320 240 390 240"/>
+    <path d="M250 310 C320 310 320 240 390 240"/>
+    <path d="M250 310 C320 310 320 360 390 360"/>
+    <path d="M570 120 C640 120 640 180 700 180"/>
+    <path d="M570 240 C620 240 620 240 700 240"/>
+    <path d="M570 360 C640 360 640 310 700 310"/>
   </g>
-  <g font-family="Segoe UI, Arial, sans-serif">
-    <rect x="74" y="96" width="182" height="136" rx="8" fill="url(#card)" stroke="#303832"/>
-    <text x="104" y="140" fill="#4eff62" font-size="24" font-weight="900">SCORE</text>
-    <text x="104" y="181" fill="#f6f7f1" font-size="44" font-weight="900">0-15</text>
-    <circle cx="208" cy="175" r="22" fill="#e3ff00"/>
-    <rect x="366" y="96" width="168" height="136" rx="8" fill="url(#card)" stroke="#303832"/>
-    <text x="396" y="140" fill="#e3ff00" font-size="24" font-weight="900">REASON</text>
-    <text x="396" y="178" fill="#f6f7f1" font-size="20" font-weight="800">Ace</text>
-    <text x="396" y="206" fill="#b9beb8" font-size="18">Volley</text>
-    <rect x="646" y="96" width="180" height="136" rx="8" fill="url(#card)" stroke="#303832"/>
-    <text x="676" y="140" fill="#7ec8ff" font-size="24" font-weight="900">SUMMARY</text>
-    <rect x="676" y="158" width="112" height="12" rx="6" fill="#4eff62"/>
-    <rect x="676" y="184" width="82" height="12" rx="6" fill="#ff454e"/>
-    <rect x="74" y="328" width="182" height="136" rx="8" fill="url(#card)" stroke="#303832"/>
-    <text x="104" y="372" fill="#4eff62" font-size="24" font-weight="900">PRESETS</text>
-    <text x="104" y="409" fill="#f6f7f1" font-size="20" font-weight="800">6 games</text>
-    <text x="104" y="437" fill="#b9beb8" font-size="18">TieBreak ON</text>
-    <rect x="366" y="328" width="168" height="136" rx="8" fill="url(#card)" stroke="#303832"/>
-    <text x="396" y="372" fill="#e3ff00" font-size="24" font-weight="900">RULES</text>
-    <text x="396" y="409" fill="#f6f7f1" font-size="20" font-weight="800">Deuce</text>
-    <text x="396" y="437" fill="#b9beb8" font-size="18">Win by 2</text>
-    <rect x="646" y="328" width="180" height="136" rx="8" fill="url(#card)" stroke="#303832"/>
-    <text x="676" y="372" fill="#ff454e" font-size="24" font-weight="900">HISTORY</text>
-    <text x="676" y="409" fill="#f6f7f1" font-size="20" font-weight="800">2026-05-31</text>
-    <text x="676" y="437" fill="#b9beb8" font-size="18">Winner: YOU</text>
+
+  <!-- Card: SCORE -->
+  <g filter="url(#cardSh)">
+    <rect x="70" y="130" width="180" height="100" rx="14" fill="url(#cardF)" stroke="#dde8df" stroke-width="1"/>
+    <circle cx="104" cy="164" r="18" fill="#2e9e4e" opacity="0.1"/>
+    <text x="104" y="170" text-anchor="middle" fill="#2e9e4e" font-size="18">&#x1F3BE;</text>
+    <text x="132" y="168" fill="#2e9e4e" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="1">SCORE</text>
+    <text x="98" y="206" fill="#1a3320" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="30" font-weight="800">0 : 15</text>
+  </g>
+
+  <!-- Card: UNDO -->
+  <g filter="url(#cardSh)">
+    <rect x="70" y="260" width="180" height="100" rx="14" fill="url(#cardF)" stroke="#dde8df" stroke-width="1"/>
+    <circle cx="104" cy="294" r="18" fill="#3b8bd9" opacity="0.1"/>
+    <text x="97" y="300" fill="#3b8bd9" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="800">&#x21A9;</text>
+    <text x="132" y="298" fill="#3b8bd9" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="1">UNDO</text>
+    <text x="98" y="333" fill="#5a7a60" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="500">Swipe up to revert</text>
+  </g>
+
+  <!-- Card: REASON -->
+  <g filter="url(#cardSh)">
+    <rect x="390" y="72" width="180" height="100" rx="14" fill="url(#cardF)" stroke="#dde8df" stroke-width="1"/>
+    <circle cx="424" cy="106" r="18" fill="#d4a017" opacity="0.1"/>
+    <text x="424" y="112" text-anchor="middle" fill="#d4a017" font-size="16">&#x1F3AF;</text>
+    <text x="452" y="110" fill="#d4a017" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="1">REASON</text>
+    <text x="418" y="140" fill="#1a3320" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="700">Ace</text>
+    <text x="418" y="157" fill="#5a7a60" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="12">Volley / UE / Return</text>
+  </g>
+
+  <!-- Card: SETTINGS -->
+  <g filter="url(#cardSh)">
+    <rect x="390" y="192" width="180" height="100" rx="14" fill="url(#cardF)" stroke="#dde8df" stroke-width="1"/>
+    <circle cx="424" cy="226" r="18" fill="#6b7d70" opacity="0.1"/>
+    <text x="424" y="232" text-anchor="middle" fill="#6b7d70" font-size="16">&#x2699;</text>
+    <text x="452" y="230" fill="#6b7d70" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="1">SETTINGS</text>
+    <text x="418" y="260" fill="#1a3320" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="700">3 Sets / 6 Games</text>
+    <text x="418" y="277" fill="#5a7a60" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="12">Deuce ON, TieBreak 7</text>
+  </g>
+
+  <!-- Card: HISTORY -->
+  <g filter="url(#cardSh)">
+    <rect x="390" y="312" width="180" height="100" rx="14" fill="url(#cardF)" stroke="#dde8df" stroke-width="1"/>
+    <circle cx="424" cy="346" r="18" fill="#e05555" opacity="0.1"/>
+    <text x="424" y="352" text-anchor="middle" fill="#e05555" font-size="16">&#x1F4CB;</text>
+    <text x="452" y="350" fill="#e05555" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="1">HISTORY</text>
+    <text x="418" y="380" fill="#1a3320" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="700">2026-06-29</text>
+    <text x="418" y="397" fill="#5a7a60" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="12">Winner: YOU  6-4, 6-3</text>
+  </g>
+
+  <!-- Card: SUMMARY -->
+  <g filter="url(#cardSh)">
+    <rect x="700" y="130" width="140" height="180" rx="14" fill="url(#cardF)" stroke="#dde8df" stroke-width="1"/>
+    <circle cx="730" cy="164" r="18" fill="#2e9e4e" opacity="0.1"/>
+    <text x="730" y="170" text-anchor="middle" fill="#2e9e4e" font-size="16">&#x1F4CA;</text>
+    <text x="755" y="168" fill="#2e9e4e" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="0.5">SUMMARY</text>
+    <!-- Mini bar chart -->
+    <text x="718" y="204" fill="#5a7a60" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="600">Ace</text>
+    <rect x="718" y="209" width="94" height="8" rx="4" fill="#e8f5ea"/>
+    <rect x="718" y="209" width="68" height="8" rx="4" fill="#2e9e4e"/>
+    <text x="718" y="234" fill="#5a7a60" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="600">UE</text>
+    <rect x="718" y="239" width="94" height="8" rx="4" fill="#fde8e8"/>
+    <rect x="718" y="239" width="42" height="8" rx="4" fill="#e05555"/>
+    <text x="718" y="264" fill="#5a7a60" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="600">Volley</text>
+    <rect x="718" y="269" width="94" height="8" rx="4" fill="#e8f5ea"/>
+    <rect x="718" y="269" width="56" height="8" rx="4" fill="#3b8bd9"/>
+    <text x="718" y="294" fill="#5a7a60" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="600">Return</text>
+    <rect x="718" y="299" width="94" height="8" rx="4" fill="#faf5e4"/>
+    <rect x="718" y="299" width="72" height="8" rx="4" fill="#d4a017"/>
   </g>
 </svg>

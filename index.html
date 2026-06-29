@@ -3,694 +3,594 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="TennisScoreはWear OS向けのテニススコア記録アプリです。腕元のスワイプ操作でポイント、ゲーム、セット、タイブレーク、履歴をすばやく管理できます。">
+  <meta name="description" content="TennisScoreはWear OS向けのテニススコア記録アプリです。腕元のタップ操作でポイント、ゲーム、セット、タイブレーク、履歴をすばやく管理できます。">
   <title>TennisScore | Wear OS Tennis Score Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #050706;
-      --panel: #111412;
-      --panel-2: #171a18;
-      --ink: #f6f7f1;
-      --muted: #b9beb8;
-      --soft: #777d78;
-      --line: rgba(246, 247, 241, 0.14);
-      --green: #4eff62;
-      --red: #ff454e;
-      --yellow: #e3ff00;
-      --cyan: #7ec8ff;
-      --shadow: 0 26px 80px rgba(0, 0, 0, 0.42);
+      --bg: #fafcfa;
+      --surface: #ffffff;
+      --surface-alt: #f4f8f5;
+      --ink: #111827;
+      --ink-secondary: #374151;
+      --muted: #6b7280;
+      --subtle: #9ca3af;
+      --border: rgba(0,0,0,0.06);
+      --green-50: #ecfdf5;
+      --green-100: #d1fae5;
+      --green-200: #a7f3d0;
+      --green-500: #10b981;
+      --green-600: #059669;
+      --green-700: #047857;
+      --green-800: #065f46;
+      --red-400: #f87171;
+      --red-500: #ef4444;
+      --amber-500: #f59e0b;
+      --blue-400: #60a5fa;
+      --blue-500: #3b82f6;
+      --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+      --radius: 16px;
+      --radius-sm: 12px;
+      --radius-xs: 8px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 
     body {
-      margin: 0;
       background: var(--bg);
       color: var(--ink);
-      font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans JP", sans-serif;
-      line-height: 1.7;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans JP", sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    img {
-      display: block;
-      max-width: 100%;
-      height: auto;
-    }
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: var(--green-600); text-decoration: none; }
 
-    a {
-      color: var(--green);
-      text-decoration-thickness: 0.08em;
-      text-underline-offset: 0.2em;
-    }
+    .wrap { width: min(1140px, calc(100% - 48px)); margin: 0 auto; }
 
-    .wrap {
-      width: min(1120px, calc(100vw - 32px));
-      margin: 0 auto;
+    /* ─── Animate on scroll ─── */
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    .reveal.visible { opacity: 1; transform: none; }
 
+    /* ─── Navigation ─── */
     .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      border-bottom: 1px solid var(--line);
-      background: rgba(5, 7, 6, 0.86);
-      backdrop-filter: blur(16px);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      background: rgba(250,252,250,0.82);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow 0.3s;
     }
+    .topbar.scrolled { box-shadow: var(--shadow-sm); }
 
     .topbar .wrap {
-      min-height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
 
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--ink);
-      font-weight: 800;
-      text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+      color: var(--ink); font-weight: 800; font-size: 1.05rem; text-decoration: none;
     }
+    .brand img { width: 34px; height: 34px; border-radius: 8px; box-shadow: var(--shadow-sm); }
 
-    .brand img {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-    }
+    .nav-group { display: flex; align-items: center; gap: 6px; }
 
     .nav {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 14px;
-      font-size: 0.9rem;
+      display: flex; gap: 4px; font-size: 0.88rem;
     }
-
     .nav a {
-      color: var(--muted);
-      text-decoration: none;
+      padding: 6px 12px; border-radius: 8px;
+      color: var(--muted); font-weight: 500;
+      transition: color 0.2s, background 0.2s;
     }
+    .nav a:hover { color: var(--ink); background: var(--surface-alt); }
 
     .lang-toggle {
-      display: inline-grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2px;
-      padding: 3px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.04);
+      display: flex; gap: 2px; padding: 3px;
+      border-radius: 10px; background: var(--surface-alt);
+      border: 1px solid var(--border);
     }
-
     .lang-toggle button {
-      min-width: 44px;
-      min-height: 32px;
-      border: 0;
-      border-radius: 6px;
-      background: transparent;
-      color: var(--muted);
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
+      padding: 4px 12px; border: 0; border-radius: 7px;
+      background: transparent; color: var(--muted);
+      font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+      transition: all 0.2s;
     }
-
     .lang-toggle button[aria-pressed="true"] {
-      background: var(--green);
-      color: #061006;
+      background: var(--green-600); color: #fff; box-shadow: var(--shadow-xs);
     }
 
+    /* ─── Hero ─── */
     .hero {
-      padding: 68px 0 34px;
-      border-bottom: 1px solid var(--line);
+      padding: 140px 0 100px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
       background:
-        linear-gradient(90deg, rgba(78, 255, 98, 0.13), transparent 42%),
-        linear-gradient(180deg, rgba(255, 69, 78, 0.1), transparent 40%);
+        radial-gradient(ellipse 50% 70% at 75% 20%, rgba(16,185,129,0.08), transparent),
+        radial-gradient(ellipse 40% 50% at 20% 80%, rgba(59,130,246,0.05), transparent),
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(16,185,129,0.04), transparent);
+    }
+    .hero::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
     }
 
     .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr);
-      align-items: center;
-      gap: 52px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: center;
+      position: relative;
     }
 
-    .eyebrow {
-      margin: 0 0 14px;
-      color: var(--green);
-      font-size: 0.9rem;
-      font-weight: 800;
-      letter-spacing: 0;
-      text-transform: uppercase;
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px 6px 8px;
+      background: var(--green-50); border: 1px solid var(--green-200);
+      border-radius: 100px; margin-bottom: 20px;
+      font-size: 0.82rem; font-weight: 600; color: var(--green-700);
     }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin-top: 0;
+    .hero-badge-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green-500);
+      box-shadow: 0 0 8px rgba(16,185,129,0.4);
     }
 
     h1 {
-      margin-bottom: 18px;
-      font-size: clamp(2.45rem, 7vw, 5.7rem);
-      line-height: 0.95;
-      letter-spacing: 0;
+      font-size: clamp(2.6rem, 6vw, 4.2rem);
+      font-weight: 900; line-height: 1.1; letter-spacing: -0.03em;
+      margin-bottom: 20px;
     }
 
-    .lead {
-      max-width: 680px;
-      margin-bottom: 28px;
-      color: var(--muted);
-      font-size: clamp(1.04rem, 2vw, 1.22rem);
+    .hero-lead {
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      color: var(--muted); line-height: 1.75;
+      max-width: 480px; margin-bottom: 36px;
     }
 
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-    }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 12px; }
 
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 46px;
-      padding: 0 18px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--green);
-      color: #061006;
-      font-weight: 850;
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 12px;
+      font-weight: 600; font-size: 0.92rem;
       text-decoration: none;
-      box-shadow: 0 10px 32px rgba(78, 255, 98, 0.18);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-primary {
+      background: var(--green-600); color: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 4px 12px rgba(5,150,105,0.2);
+    }
+    .btn-primary:hover {
+      background: var(--green-700);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 8px 20px rgba(5,150,105,0.25);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: var(--surface); color: var(--ink-secondary);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
+    }
+    .btn-secondary:hover {
+      background: var(--surface-alt); border-color: rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+    .btn-icon { font-size: 1.1em; }
+
+    /* Hero visual - Watch mockup */
+    .hero-visual { position: relative; display: flex; justify-content: center; }
+
+    .watch-frame {
+      position: relative; width: 320px;
+    }
+    .watch-frame img {
+      width: 100%; border-radius: 50%;
+      box-shadow:
+        0 0 0 12px #2d2d2d,
+        0 0 0 14px #444,
+        0 0 0 15px rgba(0,0,0,0.1),
+        0 20px 60px rgba(0,0,0,0.15),
+        0 40px 80px rgba(0,0,0,0.08);
     }
 
-    .button.secondary {
-      background: transparent;
-      color: var(--ink);
-      box-shadow: none;
+    .hero-float-badge {
+      position: absolute; padding: 8px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px; box-shadow: var(--shadow-lg);
+      font-size: 0.82rem; font-weight: 600;
+      white-space: nowrap;
+      animation: float 6s ease-in-out infinite;
+    }
+    .hero-float-badge.b1 { top: 10%; right: -20px; animation-delay: 0s; }
+    .hero-float-badge.b2 { bottom: 20%; left: -30px; animation-delay: 2s; }
+    .hero-float-badge.b3 { bottom: 5%; right: -10px; animation-delay: 4s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
-    .hero-card {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #080908;
-      box-shadow: var(--shadow);
-    }
+    /* ─── Section commons ─── */
+    section { padding: 100px 0; }
 
-    .hero-card img {
-      width: 100%;
+    .section-header {
+      text-align: center; max-width: 640px; margin: 0 auto 64px;
     }
-
-    section {
-      padding: 62px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 24px;
-      margin-bottom: 28px;
+    .section-tag {
+      display: inline-flex; padding: 5px 14px;
+      background: var(--green-50); border: 1px solid var(--green-200);
+      border-radius: 100px; margin-bottom: 16px;
+      font-size: 0.78rem; font-weight: 700; color: var(--green-700);
+      letter-spacing: 0.06em; text-transform: uppercase;
     }
 
     h2 {
-      margin-bottom: 0;
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      line-height: 1.08;
-      letter-spacing: 0;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800; line-height: 1.15; letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .section-header p { color: var(--muted); font-size: 1.05rem; line-height: 1.7; }
+
+    /* ─── Feature Steps ─── */
+    .features-section {
+      background: var(--surface-alt);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
-    .section-head p {
-      max-width: 520px;
-      margin-bottom: 0;
-      color: var(--muted);
+    .feature-step {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: center;
+    }
+    .feature-step + .feature-step { margin-top: 80px; }
+    .feature-step.reverse { direction: rtl; }
+    .feature-step.reverse > * { direction: ltr; }
+
+    .feature-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; border-radius: 12px;
+      font-weight: 800; font-size: 1rem; margin-bottom: 20px;
+    }
+    .feature-num.green { background: var(--green-50); color: var(--green-700); border: 1px solid var(--green-200); }
+    .feature-num.blue { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .feature-num.amber { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .feature-num.red { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .feature-num.teal { background: #f0fdfa; color: #0f766e; border: 1px solid #99f6e4; }
+
+    .feature-step h3 {
+      font-size: 1.5rem; font-weight: 800; line-height: 1.3;
+      letter-spacing: -0.01em; margin-bottom: 14px;
+    }
+    .feature-step p {
+      color: var(--muted); font-size: 1rem; line-height: 1.8;
     }
 
-    .usage {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 22px;
+    .feature-img {
+      border-radius: var(--radius); overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .feature-img:hover { box-shadow: var(--shadow-xl); transform: translateY(-4px); }
+    .feature-img img { width: 100%; }
+
+    /* ─── How to use ─── */
+    .usage-layout {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: start;
     }
 
-    .phone-shot {
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #080908;
+    .usage-illustration {
+      border-radius: var(--radius); overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+    }
+    .usage-illustration img { width: 100%; }
+
+    .gesture-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
     }
 
-    .phone-shot img {
-      width: 100%;
-    }
-
-    .illustration {
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #080908;
-      box-shadow: var(--shadow);
-    }
-
-    .illustration img {
-      width: 100%;
-    }
-
-    .gesture-panel {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .gesture {
-      min-height: 180px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 20px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-    }
-
-    .gesture .control-label {
-      width: fit-content;
-      padding: 5px 9px;
-      border: 1px solid currentColor;
-      border-radius: 6px;
-      color: var(--yellow);
-      font-size: 0.78rem;
-      font-weight: 900;
-      line-height: 1;
-      letter-spacing: 0;
-    }
-
-    .gesture strong {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 1.16rem;
-    }
-
-    .gesture p {
-      margin-bottom: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .feature-illustration {
-      margin-top: 18px;
-    }
-
-    .card {
+    .gesture-card {
       padding: 22px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-xs);
+      transition: box-shadow 0.3s, transform 0.3s;
     }
+    .gesture-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
 
-    .card h3 {
-      margin-bottom: 8px;
-      font-size: 1.05rem;
+    .gesture-badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 6px; margin-bottom: 14px;
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em;
     }
+    .gesture-card:nth-child(1) .gesture-badge { background: var(--green-50); color: var(--green-700); }
+    .gesture-card:nth-child(2) .gesture-badge { background: #fef2f2; color: #b91c1c; }
+    .gesture-card:nth-child(3) .gesture-badge { background: #fffbeb; color: #b45309; }
+    .gesture-card:nth-child(4) .gesture-badge { background: #eff6ff; color: #1d4ed8; }
 
-    .card p {
-      margin-bottom: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
+    .gesture-card strong {
+      display: block; font-size: 1rem; margin-bottom: 6px;
     }
+    .gesture-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
 
-    .accent {
-      color: var(--green);
-    }
-
-    .split {
-      display: grid;
-      grid-template-columns: 0.88fr 1.12fr;
-      gap: 34px;
-      align-items: start;
-    }
-
-    .feature-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .feature-row {
-      display: grid;
-      grid-template-columns: 112px 1fr;
-      gap: 16px;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .feature-row:last-child {
-      border-bottom: 0;
-    }
-
-    .feature-row b {
-      color: var(--green);
-    }
-
-    .feature-row p {
-      margin-bottom: 0;
-      color: var(--muted);
-    }
-
-    .screens {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      align-items: start;
-    }
-
-    .screenshot {
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #080908;
-    }
-
-    .screenshot figcaption {
-      padding: 13px 16px;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    figure {
-      margin: 0;
+    /* ─── Settings ─── */
+    .settings-section {
+      background: var(--surface-alt);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
     .settings-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
     }
 
-    .setting {
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel-2);
+    .setting-card {
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-xs);
+      transition: box-shadow 0.3s, transform 0.3s;
     }
+    .setting-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .setting-card b { display: block; margin-bottom: 6px; font-size: 0.95rem; color: var(--ink); }
+    .setting-card span { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
 
-    .setting b {
-      display: block;
-      margin-bottom: 5px;
+    /* ─── CTA ─── */
+    .cta-section {
+      position: relative; text-align: center;
+      background: linear-gradient(135deg, var(--green-50), #f0f9ff, var(--green-50));
     }
-
-    .setting span {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .cta {
-      padding: 58px 0;
+    .cta-section::before {
+      content: ''; position: absolute; inset: 0;
       background:
-        linear-gradient(90deg, rgba(78, 255, 98, 0.12), rgba(255, 69, 78, 0.09)),
-        #090b09;
-      border-bottom: 0;
+        radial-gradient(ellipse 50% 60% at 30% 50%, rgba(16,185,129,0.06), transparent),
+        radial-gradient(ellipse 50% 60% at 70% 50%, rgba(59,130,246,0.04), transparent);
     }
+    .cta-section .wrap { position: relative; }
+    .cta-section h2 { margin-bottom: 14px; }
+    .cta-section p { max-width: 560px; margin: 0 auto 36px; color: var(--muted); font-size: 1.02rem; line-height: 1.7; }
+    .cta-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
 
-    .cta .wrap {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 22px;
-    }
-
-    .cta p {
-      max-width: 680px;
-      margin-bottom: 0;
-      color: var(--muted);
-    }
-
+    /* ─── Footer ─── */
     footer {
-      padding: 28px 0;
-      color: var(--soft);
-      font-size: 0.9rem;
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+      color: var(--subtle); font-size: 0.85rem;
     }
 
+    /* ─── Responsive ─── */
     @media (max-width: 900px) {
-      .hero-grid,
-      .usage,
-      .split,
-      .cta .wrap {
-        grid-template-columns: 1fr;
-      }
-
-      .cards,
-      .settings-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .cta .wrap {
-        display: grid;
-      }
+      .hero-grid, .feature-step, .usage-layout { grid-template-columns: 1fr; gap: 40px; }
+      .feature-step.reverse { direction: ltr; }
+      .hero { padding: 120px 0 64px; }
+      .hero-visual { order: -1; }
+      .watch-frame { width: 260px; }
+      .hero-float-badge { display: none; }
+      .settings-grid { grid-template-columns: 1fr 1fr; }
     }
 
     @media (max-width: 640px) {
-      .topbar {
-        position: static;
-      }
-
-      .topbar .wrap {
-        align-items: flex-start;
-        flex-direction: column;
-        padding: 14px 0;
-      }
-
-      .nav {
-        justify-content: flex-start;
-      }
-
-      .hero {
-        padding-top: 46px;
-      }
-
-      .hero-grid {
-        gap: 28px;
-      }
-
-      .section-head {
-        display: block;
-      }
-
-      .section-head p {
-        margin-top: 12px;
-      }
-
-      .gesture-panel,
-      .cards,
-      .screens,
-      .settings-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .feature-row {
-        grid-template-columns: 1fr;
-        gap: 5px;
-      }
+      .topbar { position: sticky; top: 0; }
+      .topbar .wrap { height: auto; flex-wrap: wrap; padding: 12px 0; gap: 8px; }
+      .nav { gap: 0; }
+      .nav a { padding: 6px 8px; font-size: 0.82rem; }
+      .hero { padding: 96px 0 56px; }
+      .watch-frame { width: 220px; }
+      .gesture-grid, .settings-grid { grid-template-columns: 1fr; }
+      section { padding: 64px 0; }
+      .feature-step + .feature-step { margin-top: 56px; }
+      .section-header { margin-bottom: 40px; }
+      h1 { font-size: 2.2rem; }
     }
   </style>
 </head>
 <body>
-  <header class="topbar">
+  <header class="topbar" id="topbar">
     <div class="wrap">
       <a class="brand" href="#top" aria-label="TennisScore トップへ">
         <img src="assets/store_icon_512.png" alt="">
         <span>TennisScore</span>
       </a>
-      <nav class="nav" aria-label="ページ内メニュー">
-        <a href="#usage">操作方法</a>
-        <a href="#features">特徴</a>
-        <a href="#settings">設定</a>
-        <a href="privacy-policy.html">Privacy Policy</a>
-      </nav>
-      <div class="lang-toggle" aria-label="Language">
-        <button type="button" data-lang-button="ja" aria-pressed="true">JP</button>
-        <button type="button" data-lang-button="en" aria-pressed="false">EN</button>
+      <div class="nav-group">
+        <nav class="nav" aria-label="ページ内メニュー">
+          <a href="#features">できること</a>
+          <a href="#usage">操作方法</a>
+          <a href="#settings">設定</a>
+          <a href="privacy-policy.html">Privacy</a>
+        </nav>
+        <div class="lang-toggle" aria-label="Language">
+          <button type="button" data-lang-button="ja" aria-pressed="true">JP</button>
+          <button type="button" data-lang-button="en" aria-pressed="false">EN</button>
+        </div>
       </div>
     </div>
   </header>
 
   <main id="top">
+    <!-- ─── Hero ─── -->
     <section class="hero">
       <div class="wrap hero-grid">
-        <div>
-          <p class="eyebrow">Wear OS Tennis Score Tracker</p>
-          <h1>TennisScore</h1>
-          <p class="lead">テニスのポイント、ゲーム、セットを腕元だけで記録。試合中にスマホを出さず、画面左右のタップと上下スワイプでスコア、タイブレーク、履歴、ポイント理由まで管理できます。</p>
-          <div class="actions">
-            <a class="button" href="#usage">操作方法を見る</a>
-            <a class="button secondary" href="#features">特徴を見る</a>
+        <div class="reveal">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Wear OS Tennis Score Tracker
+          </div>
+          <h1>腕元で、<br>テニスを記録しよう</h1>
+          <p class="hero-lead">TennisScoreは、試合中にスマホを取り出す必要なし。スマートウォッチのタップとスワイプだけで、スコアの記録からプレー分析まですべて完結します。</p>
+          <div class="btn-group">
+            <a class="btn btn-primary" href="#features"><span class="btn-icon">&#x2728;</span> できることを見る</a>
+            <a class="btn btn-secondary" href="#usage">操作方法を見る</a>
           </div>
         </div>
-        <div class="hero-card">
-          <img src="assets/feature_graphic.png" alt="TennisScoreのスコア画面と紹介ビジュアル">
+        <div class="hero-visual reveal">
+          <div class="watch-frame">
+            <img src="assets/score_screen.png" alt="TennisScoreのスコア画面">
+          </div>
+          <div class="hero-float-badge b1">&#x1F3BE; タップで加点</div>
+          <div class="hero-float-badge b2">&#x21A9;&#xFE0F; スワイプで戻す</div>
+          <div class="hero-float-badge b3">&#x1F4CA; サマリー表示</div>
         </div>
       </div>
     </section>
 
+    <!-- ─── Features ─── -->
+    <section id="features" class="features-section">
+      <div class="wrap">
+        <div class="section-header reveal">
+          <span class="section-tag">Features</span>
+          <h2>TennisScoreでできること</h2>
+          <p>タップで簡単スコア記録。プレー内容の記録・分析まで、テニスの試合をもっと楽しくする5つの機能。</p>
+        </div>
+
+        <!-- 1. Tap scoring -->
+        <div class="feature-step reveal">
+          <div>
+            <div class="feature-num green">1</div>
+            <h3>タップで簡単カウントアップ</h3>
+            <p>画面の左側をタップすれば自分に加点、右側をタップすれば相手に加点。ポイントは0、15、30、40、Adとテニスのルール通りに自動で進みます。試合中に考える必要はありません。</p>
+          </div>
+          <div class="feature-img">
+            <img src="assets/score_screen.png" alt="TennisScoreのスコア画面。YouとOpponentのポイント、ゲーム、セットが表示されている">
+          </div>
+        </div>
+
+        <!-- 2. Swipe to undo -->
+        <div class="feature-step reverse reveal">
+          <div>
+            <div class="feature-num blue">2</div>
+            <h3>下からスワイプで1個戻す</h3>
+            <p>間違えてタップしても大丈夫。画面を下から上にスワイプするだけで、直前のポイントを取り消せます。テニスのプレー中でも、片手でサッと修正できます。</p>
+          </div>
+          <div class="feature-img">
+            <img src="assets/store_screenshot_1.png" alt="TennisScoreの操作説明スクリーンショット">
+          </div>
+        </div>
+
+        <!-- 3. Game settings -->
+        <div class="feature-step reveal">
+          <div>
+            <div class="feature-num amber">3</div>
+            <h3>ゲームの詳細設定が可能</h3>
+            <p>セット数、ゲーム数、デュースの有無、タイブレークのルールなど、試合のルールを自由にカスタマイズ。練習用の短いゲームから本格的な試合まで、さまざまなシーンに対応できます。</p>
+          </div>
+          <div class="feature-img">
+            <img src="assets/store_screenshot_2.png" alt="TennisScoreのカスタマイズ説明スクリーンショット">
+          </div>
+        </div>
+
+        <!-- 4. Point reason -->
+        <div class="feature-step reverse reveal">
+          <div>
+            <div class="feature-num red">4</div>
+            <h3>プレー内容を記録</h3>
+            <p>ポイントが入ったとき、Ace、Unforced Error、Volley、Returnなど、どんなプレーで得点したかを記録できます。試合後の振り返りやプレーの傾向分析に役立ちます。</p>
+          </div>
+          <div class="feature-img">
+            <img src="assets/features_illustration.svg" alt="スコア、ポイント理由、サマリー、設定、履歴の流れを示すイラスト">
+          </div>
+        </div>
+
+        <!-- 5. Summary -->
+        <div class="feature-step reveal">
+          <div>
+            <div class="feature-num teal">5</div>
+            <h3>記録をもとにサマリー表示</h3>
+            <p>記録したプレー内容をもとに、ポイント理由ごとのカウントや割合をサマリーとして表示。自分の強みや改善点が一目でわかります。過去の試合履歴も保存できるので、成長の記録にもなります。</p>
+          </div>
+          <div class="feature-img">
+            <img src="assets/feature_graphic.png" alt="TennisScoreの紹介ビジュアル">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── How to Use ─── -->
     <section id="usage">
       <div class="wrap">
-        <div class="section-head">
-          <h2>加点はタップ、操作は上下スワイプ</h2>
-          <p>Wear OSの左右スワイプ操作と干渉しないように、加点は画面の左側・右側をタップ。上下スワイプでメニューと取り消しを行います。</p>
+        <div class="section-header reveal">
+          <span class="section-tag">How to Use</span>
+          <h2>タップとスワイプだけの簡単操作</h2>
+          <p>Wear OSの操作と干渉しない設計。4つのジェスチャーですべてをコントロールできます。</p>
         </div>
-        <div class="usage">
-          <div>
-            <figure class="illustration">
-              <img src="assets/gesture_illustration.svg" alt="TennisScoreの左右タップ加点と上下スワイプ操作を示すイラスト">
-            </figure>
+        <div class="usage-layout reveal">
+          <div class="usage-illustration">
+            <img src="assets/gesture_illustration.svg" alt="TennisScoreの左右タップ加点と上下スワイプ操作を示すイラスト">
           </div>
-          <div class="gesture-panel" aria-label="操作方法一覧">
-            <div class="gesture">
-              <span class="control-label">LEFT TAP</span>
-              <div>
-                <strong>You +1 point</strong>
-                <p>画面の左側をタップして、自分のポイントを追加します。</p>
-              </div>
+          <div class="gesture-grid" aria-label="操作方法一覧">
+            <div class="gesture-card">
+              <span class="gesture-badge">LEFT TAP</span>
+              <strong>You +1 point</strong>
+              <p>画面の左側をタップして、自分のポイントを追加します。</p>
             </div>
-            <div class="gesture">
-              <span class="control-label">RIGHT TAP</span>
-              <div>
-                <strong>Opponent +1 point</strong>
-                <p>画面の右側をタップして、相手のポイントを追加します。</p>
-              </div>
+            <div class="gesture-card">
+              <span class="gesture-badge">RIGHT TAP</span>
+              <strong>Opponent +1 point</strong>
+              <p>画面の右側をタップして、相手のポイントを追加します。</p>
             </div>
-            <div class="gesture">
-              <span class="control-label">DOWN SWIPE</span>
-              <div>
-                <strong>Menu</strong>
-                <p>上から下へスワイプして、設定、履歴、サマリーなどを開きます。</p>
-              </div>
+            <div class="gesture-card">
+              <span class="gesture-badge">DOWN SWIPE</span>
+              <strong>Menu</strong>
+              <p>上から下へスワイプして、設定、履歴、サマリーなどを開きます。</p>
             </div>
-            <div class="gesture">
-              <span class="control-label">UP SWIPE</span>
-              <div>
-                <strong>Undo</strong>
-                <p>下から上へスワイプして、直前の操作を取り消します。</p>
-              </div>
+            <div class="gesture-card">
+              <span class="gesture-badge">UP SWIPE</span>
+              <strong>Undo</strong>
+              <p>下から上へスワイプして、直前の操作を取り消します。</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="features">
+    <!-- ─── Settings ─── -->
+    <section id="settings" class="settings-section">
       <div class="wrap">
-        <div class="section-head">
-          <h2>記録も振り返りも腕元で</h2>
-          <p>現在のスコアだけでなく、ポイント理由、試合サマリー、過去の履歴まで残せます。</p>
-        </div>
-        <div class="cards">
-          <article class="card">
-            <h3><span class="accent">01</span> 自動スコア進行</h3>
-            <p>0、15、30、40、Ad、ゲーム、セットをルールに合わせて進めます。</p>
-          </article>
-          <article class="card">
-            <h3><span class="accent">02</span> タイブレーク対応</h3>
-            <p>タイブレークの有無、到達点、2点差ルールを設定できます。</p>
-          </article>
-          <article class="card">
-            <h3><span class="accent">03</span> ポイント理由</h3>
-            <p>Ace、Unforced Error、Volleyなど、得点理由をあとから集計できます。</p>
-          </article>
-          <article class="card">
-            <h3><span class="accent">04</span> 履歴保存</h3>
-            <p>終了した試合の勝者とログを保存し、あとで見返せます。</p>
-          </article>
-        </div>
-        <figure class="illustration feature-illustration">
-          <img src="assets/features_illustration.svg" alt="スコア、ポイント理由、サマリー、設定、履歴の流れを示すイラスト">
-        </figure>
-      </div>
-    </section>
-
-    <section>
-      <div class="wrap split">
-        <div>
-          <h2>小さな画面に必要な情報だけ</h2>
-          <p class="lead">スコア画面では、中央にポイント、下部にセットとゲーム、サーバー表示を配置。試合中に一瞬で状態を確認できます。</p>
-          <div class="feature-list">
-            <div class="feature-row">
-              <b>Score</b>
-              <p>You / Opponent のポイントを大きく表示。サーバー側にはテニスボールのアイコンを表示します。</p>
-            </div>
-            <div class="feature-row">
-              <b>Summary</b>
-              <p>ポイント理由ごとのカウントと割合を確認できます。</p>
-            </div>
-            <div class="feature-row">
-              <b>Presets</b>
-              <p>よく使う試合ルールを保存して、次回すばやく呼び出せます。</p>
-            </div>
-          </div>
-        </div>
-        <div class="screens">
-          <figure class="screenshot">
-            <img src="assets/score_screen.png" alt="TennisScoreのスコア画面。YouとOpponentのポイント、ゲーム、セットが表示されている">
-            <figcaption>試合中に見るメインのスコア画面</figcaption>
-          </figure>
-          <figure class="screenshot">
-            <img src="assets/store_screenshot_1.png" alt="TennisScoreの操作説明スクリーンショット">
-            <figcaption>基本操作と対応機能をまとめた紹介画像</figcaption>
-          </figure>
-          <figure class="screenshot">
-            <img src="assets/store_screenshot_2.png" alt="TennisScoreのカスタマイズ説明スクリーンショット">
-            <figcaption>セット数、ゲーム数、デュース、タイブレークなどを調整可能</figcaption>
-          </figure>
-        </div>
-      </div>
-    </section>
-
-    <section id="settings">
-      <div class="wrap">
-        <div class="section-head">
+        <div class="section-header reveal">
+          <span class="section-tag">Settings</span>
           <h2>試合ルールを柔軟に設定</h2>
           <p>練習、短いゲーム、正式ルール寄りの試合など、場面に合わせて設定できます。</p>
         </div>
-        <div class="settings-grid">
-          <div class="setting">
+        <div class="settings-grid reveal">
+          <div class="setting-card">
             <b>Sets to Win</b>
             <span>勝利に必要なセット数を設定</span>
           </div>
-          <div class="setting">
+          <div class="setting-card">
             <b>Games / Set</b>
             <span>1セットを取るためのゲーム数を設定</span>
           </div>
-          <div class="setting">
+          <div class="setting-card">
             <b>First Serve</b>
             <span>最初のサーバーをYou / Opponentから選択</span>
           </div>
-          <div class="setting">
+          <div class="setting-card">
             <b>Start 15-all</b>
             <span>15-15から始める練習形式にも対応</span>
           </div>
-          <div class="setting">
+          <div class="setting-card">
             <b>Deuce</b>
             <span>デュースあり / なしを切り替え</span>
           </div>
-          <div class="setting">
+          <div class="setting-card">
             <b>TieBreak</b>
             <span>タイブレークの有無とポイント数を設定</span>
           </div>
@@ -698,54 +598,65 @@
       </div>
     </section>
 
-    <section class="cta">
-      <div class="wrap">
-        <div>
-          <h2>腕元で、試合の流れを逃さない。</h2>
-          <p>TennisScoreは、試合中の操作をできるだけ少なくしながら、あとで振り返れる情報を残すWear OS向けスコアトラッカーです。</p>
+    <!-- ─── CTA ─── -->
+    <section class="cta-section">
+      <div class="wrap reveal">
+        <h2>腕元で、試合の流れを逃さない。</h2>
+        <p>TennisScoreは、試合中の操作をできるだけ少なくしながら、あとで振り返れる情報を残すWear OS向けスコアトラッカーです。</p>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="#top">トップへ戻る</a>
+          <a class="btn btn-secondary" href="privacy-policy.html">Privacy Policy</a>
         </div>
-        <a class="button secondary" href="privacy-policy.html">Privacy Policy</a>
       </div>
     </section>
   </main>
 
   <footer>
-    <div class="wrap">© TennisScore. Built for Wear OS tennis score tracking.</div>
+    <div class="wrap">&copy; TennisScore. Built for Wear OS tennis score tracking.</div>
   </footer>
+
   <script>
+    // Scroll reveal
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Topbar shadow on scroll
+    const topbar = document.getElementById('topbar');
+    window.addEventListener('scroll', () => {
+      topbar.classList.toggle('scrolled', window.scrollY > 10);
+    }, { passive: true });
+
+    // Language toggle
     const englishText = new Map([
+      ["できること", "Features"],
       ["操作方法", "How to use"],
-      ["特徴", "Features"],
       ["設定", "Settings"],
       ["Wear OS Tennis Score Tracker", "Wear OS Tennis Score Tracker"],
-      ["テニスのポイント、ゲーム、セットを腕元だけで記録。試合中にスマホを出さず、画面左右のタップと上下スワイプでスコア、タイブレーク、履歴、ポイント理由まで管理できます。", "Track tennis points, games, and sets right from your wrist. Manage scoring, tiebreaks, history, and point reasons with left/right taps and up/down swipes during a match."],
+      ["腕元で、テニスを記録しよう", "Track Your Tennis,\nRight From Your Wrist"],
+      ["TennisScoreは、試合中にスマホを取り出す必要なし。スマートウォッチのタップとスワイプだけで、スコアの記録からプレー分析まですべて完結します。", "No need to pull out your phone during a match. With just taps and swipes on your smartwatch, TennisScore handles everything from score tracking to play analysis."],
+      ["できることを見る", "View features"],
       ["操作方法を見る", "View controls"],
-      ["特徴を見る", "View features"],
-      ["加点はタップ、操作は上下スワイプ", "Tap to score, swipe up/down to control"],
-      ["Wear OSの左右スワイプ操作と干渉しないように、加点は画面の左側・右側をタップ。上下スワイプでメニューと取り消しを行います。", "To avoid conflicts with Wear OS side-swipe gestures, scoring uses left and right screen taps. Swipe down from the top for menu, and swipe up from the bottom for undo."],
+      ["TennisScoreでできること", "What TennisScore Can Do"],
+      ["タップで簡単スコア記録。プレー内容の記録・分析まで、テニスの試合をもっと楽しくする5つの機能。", "Simple tap scoring, play recording, and analysis. Five features that make your tennis matches more enjoyable."],
+      ["タップで簡単カウントアップ", "Easy Tap Scoring"],
+      ["画面の左側をタップすれば自分に加点、右側をタップすれば相手に加点。ポイントは0、15、30、40、Adとテニスのルール通りに自動で進みます。試合中に考える必要はありません。", "Tap the left side to score for yourself, the right side for your opponent. Points automatically progress through 0, 15, 30, 40, and Ad following tennis rules. No thinking needed during the match."],
+      ["下からスワイプで1個戻す", "Swipe Up to Undo"],
+      ["間違えてタップしても大丈夫。画面を下から上にスワイプするだけで、直前のポイントを取り消せます。テニスのプレー中でも、片手でサッと修正できます。", "Made a wrong tap? No worries. Just swipe up from the bottom to undo the last point. Quick one-handed correction, even mid-play."],
+      ["ゲームの詳細設定が可能", "Detailed Game Settings"],
+      ["セット数、ゲーム数、デュースの有無、タイブレークのルールなど、試合のルールを自由にカスタマイズ。練習用の短いゲームから本格的な試合まで、さまざまなシーンに対応できます。", "Customize match rules including sets, games, deuce, and tiebreak settings. Covers everything from short practice games to full competitive matches."],
+      ["プレー内容を記録", "Record Play Details"],
+      ["ポイントが入ったとき、Ace、Unforced Error、Volley、Returnなど、どんなプレーで得点したかを記録できます。試合後の振り返りやプレーの傾向分析に役立ちます。", "Record how each point was won: Ace, Unforced Error, Volley, Return, and more. Great for post-match review and analyzing play tendencies."],
+      ["記録をもとにサマリー表示", "Summary From Your Records"],
+      ["記録したプレー内容をもとに、ポイント理由ごとのカウントや割合をサマリーとして表示。自分の強みや改善点が一目でわかります。過去の試合履歴も保存できるので、成長の記録にもなります。", "View summaries with counts and percentages by point reason based on your recorded data. Instantly see your strengths and areas for improvement. Past match history is saved too, so you can track your growth."],
+      ["タップとスワイプだけの簡単操作", "Simple Tap & Swipe Controls"],
+      ["Wear OSの操作と干渉しない設計。4つのジェスチャーですべてをコントロールできます。", "Designed to avoid conflicts with Wear OS gestures. Control everything with just four gestures."],
       ["画面の左側をタップして、自分のポイントを追加します。", "Tap the left side of the screen to add your point."],
       ["画面の右側をタップして、相手のポイントを追加します。", "Tap the right side of the screen to add your opponent's point."],
       ["上から下へスワイプして、設定、履歴、サマリーなどを開きます。", "Swipe down from the top to open settings, history, summary, and other menu items."],
       ["下から上へスワイプして、直前の操作を取り消します。", "Swipe up from the bottom to undo the previous action."],
-      ["記録も振り返りも腕元で", "Record and review on your wrist"],
-      ["現在のスコアだけでなく、ポイント理由、試合サマリー、過去の履歴まで残せます。", "Save more than the current score: point reasons, match summaries, and previous match history are available on the watch."],
-      ["自動スコア進行", "Automatic scoring"],
-      ["0、15、30、40、Ad、ゲーム、セットをルールに合わせて進めます。", "Progresses through 0, 15, 30, 40, Ad, games, and sets according to your rules."],
-      ["タイブレーク対応", "Tiebreak support"],
-      ["タイブレークの有無、到達点、2点差ルールを設定できます。", "Configure whether tiebreaks are used, the target points, and win-by-two behavior."],
-      ["ポイント理由", "Point reasons"],
-      ["Ace、Unforced Error、Volleyなど、得点理由をあとから集計できます。", "Track reasons such as Ace, Unforced Error, and Volley for later summaries."],
-      ["履歴保存", "Match history"],
-      ["終了した試合の勝者とログを保存し、あとで見返せます。", "Save finished matches with the winner and point logs for later review."],
-      ["小さな画面に必要な情報だけ", "Only what matters on a small screen"],
-      ["スコア画面では、中央にポイント、下部にセットとゲーム、サーバー表示を配置。試合中に一瞬で状態を確認できます。", "The score screen places points in the center, sets and games below, and a serve indicator where you can see it at a glance."],
-      ["You / Opponent のポイントを大きく表示。サーバー側にはテニスボールのアイコンを表示します。", "Shows You / Opponent points prominently, with a tennis ball icon on the serving side."],
-      ["ポイント理由ごとのカウントと割合を確認できます。", "Review counts and percentages by point reason."],
-      ["よく使う試合ルールを保存して、次回すばやく呼び出せます。", "Save frequently used match rules and load them quickly next time."],
-      ["試合中に見るメインのスコア画面", "Main score screen used during a match"],
-      ["基本操作と対応機能をまとめた紹介画像", "Overview image showing core controls and supported features"],
-      ["セット数、ゲーム数、デュース、タイブレークなどを調整可能", "Customize sets, games, deuce, tiebreaks, and more"],
-      ["試合ルールを柔軟に設定", "Flexible match rule settings"],
+      ["試合ルールを柔軟に設定", "Flexible Match Rule Settings"],
       ["練習、短いゲーム、正式ルール寄りの試合など、場面に合わせて設定できます。", "Adjust rules for practice, short games, or matches closer to standard tennis rules."],
       ["勝利に必要なセット数を設定", "Set how many sets are needed to win."],
       ["1セットを取るためのゲーム数を設定", "Set how many games are needed to win a set."],
@@ -755,7 +666,11 @@
       ["タイブレークの有無とポイント数を設定", "Configure tiebreak availability and target points."],
       ["腕元で、試合の流れを逃さない。", "Keep the match flow on your wrist."],
       ["TennisScoreは、試合中の操作をできるだけ少なくしながら、あとで振り返れる情報を残すWear OS向けスコアトラッカーです。", "TennisScore is a Wear OS score tracker designed to keep match-time interactions minimal while preserving useful data for review."],
-      ["ページ内メニュー", "Page menu"]
+      ["トップへ戻る", "Back to top"],
+      ["ページ内メニュー", "Page menu"],
+      ["タップで加点", "Tap to score"],
+      ["スワイプで戻す", "Swipe to undo"],
+      ["サマリー表示", "View summary"]
     ]);
 
     const englishAttributes = new Map([
@@ -766,7 +681,9 @@
       ["TennisScoreのスコア画面。YouとOpponentのポイント、ゲーム、セットが表示されている", "TennisScore score screen showing You and Opponent points, games, and sets"],
       ["操作方法一覧", "Control list"],
       ["TennisScoreの操作説明スクリーンショット", "TennisScore control explanation screenshot"],
-      ["TennisScoreのカスタマイズ説明スクリーンショット", "TennisScore customization explanation screenshot"]
+      ["TennisScoreのカスタマイズ説明スクリーンショット", "TennisScore customization explanation screenshot"],
+      ["TennisScoreの紹介ビジュアル", "TennisScore promotional visual"],
+      ["TennisScoreのスコア画面", "TennisScore score screen"]
     ]);
 
     const textNodes = [];
@@ -777,26 +694,19 @@
         return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
       }
     });
-
     while (walker.nextNode()) {
-      textNodes.push({
-        node: walker.currentNode,
-        ja: walker.currentNode.nodeValue
-      });
+      textNodes.push({ node: walker.currentNode, ja: walker.currentNode.nodeValue });
     }
 
-    const attributeNodes = Array.from(document.querySelectorAll("[alt], [aria-label]")).map((node) => ({
-      node,
-      alt: node.getAttribute("alt"),
-      aria: node.getAttribute("aria-label")
+    const attributeNodes = Array.from(document.querySelectorAll("[alt], [aria-label]")).map(node => ({
+      node, alt: node.getAttribute("alt"), aria: node.getAttribute("aria-label")
     }));
 
     function translateText(value, lang) {
       if (lang === "ja") return value;
       const trimmed = value.trim();
       const translated = englishText.get(trimmed);
-      if (!translated) return value;
-      return value.replace(trimmed, translated);
+      return translated ? value.replace(trimmed, translated) : value;
     }
 
     function translateAttribute(value, lang) {
@@ -806,41 +716,31 @@
 
     function setLanguage(lang) {
       document.documentElement.lang = lang;
-      document.title = lang === "ja"
-        ? "TennisScore | Wear OS Tennis Score Tracker"
-        : "TennisScore | Wear OS Tennis Score Tracker";
-      const description = document.querySelector('meta[name="description"]');
-      if (description) {
-        description.setAttribute(
-          "content",
-          lang === "ja"
-            ? "TennisScoreはWear OS向けのテニススコア記録アプリです。腕元のスワイプ操作でポイント、ゲーム、セット、タイブレーク、履歴をすばやく管理できます。"
-            : "TennisScore is a Wear OS tennis score tracker for quickly managing points, games, sets, tiebreaks, and match history from your wrist."
+      document.title = "TennisScore | Wear OS Tennis Score Tracker";
+      const desc = document.querySelector('meta[name="description"]');
+      if (desc) {
+        desc.setAttribute("content", lang === "ja"
+          ? "TennisScoreはWear OS向けのテニススコア記録アプリです。腕元のタップ操作でポイント、ゲーム、セット、タイブレーク、履歴をすばやく管理できます。"
+          : "TennisScore is a Wear OS tennis score tracker for quickly managing points, games, sets, tiebreaks, and match history from your wrist."
         );
       }
-
-      textNodes.forEach(({ node, ja }) => {
-        node.nodeValue = translateText(ja, lang);
-      });
-
+      textNodes.forEach(({ node, ja }) => { node.nodeValue = translateText(ja, lang); });
       attributeNodes.forEach(({ node, alt, aria }) => {
         if (alt !== null) node.setAttribute("alt", translateAttribute(alt, lang));
         if (aria !== null) node.setAttribute("aria-label", translateAttribute(aria, lang));
       });
-
-      document.querySelectorAll("[data-lang-button]").forEach((button) => {
-        button.setAttribute("aria-pressed", String(button.dataset.langButton === lang));
+      document.querySelectorAll("[data-lang-button]").forEach(btn => {
+        btn.setAttribute("aria-pressed", String(btn.dataset.langButton === lang));
       });
       localStorage.setItem("tennisScoreLang", lang);
     }
 
-    document.querySelectorAll("[data-lang-button]").forEach((button) => {
-      button.addEventListener("click", () => setLanguage(button.dataset.langButton));
+    document.querySelectorAll("[data-lang-button]").forEach(btn => {
+      btn.addEventListener("click", () => setLanguage(btn.dataset.langButton));
     });
 
-    const savedLang = localStorage.getItem("tennisScoreLang");
-    const initialLang = savedLang || ((navigator.language || "").toLowerCase().startsWith("ja") ? "ja" : "en");
-    setLanguage(initialLang);
+    const saved = localStorage.getItem("tennisScoreLang");
+    setLanguage(saved || ((navigator.language || "").toLowerCase().startsWith("ja") ? "ja" : "en"));
   </script>
 </body>
 </html>
