@@ -120,9 +120,8 @@
     .hero::before {
       content: ''; position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse 50% 70% at 75% 20%, rgba(16,185,129,0.08), transparent),
-        radial-gradient(ellipse 40% 50% at 20% 80%, rgba(59,130,246,0.05), transparent),
-        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(16,185,129,0.04), transparent);
+        linear-gradient(180deg, rgba(250,252,250,0.6) 0%, rgba(250,252,250,0.3) 40%, rgba(250,252,250,0.85) 100%),
+        url('assets/hero_bg.png') center/cover no-repeat;
     }
     .hero::after {
       content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
@@ -193,16 +192,11 @@
     .hero-visual { position: relative; display: flex; justify-content: center; }
 
     .watch-frame {
-      position: relative; width: 320px;
+      position: relative; width: 340px;
     }
     .watch-frame img {
-      width: 100%; border-radius: 50%;
-      box-shadow:
-        0 0 0 12px #2d2d2d,
-        0 0 0 14px #444,
-        0 0 0 15px rgba(0,0,0,0.1),
-        0 20px 60px rgba(0,0,0,0.15),
-        0 40px 80px rgba(0,0,0,0.08);
+      width: 100%; border-radius: 24px;
+      box-shadow: var(--shadow-xl);
     }
 
     .hero-float-badge {
@@ -356,14 +350,13 @@
 
     /* ─── CTA ─── */
     .cta-section {
-      position: relative; text-align: center;
-      background: linear-gradient(135deg, var(--green-50), #f0f9ff, var(--green-50));
+      position: relative; text-align: center; overflow: hidden;
     }
     .cta-section::before {
       content: ''; position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse 50% 60% at 30% 50%, rgba(16,185,129,0.06), transparent),
-        radial-gradient(ellipse 50% 60% at 70% 50%, rgba(59,130,246,0.04), transparent);
+        linear-gradient(180deg, rgba(250,252,250,0.75), rgba(250,252,250,0.6), rgba(250,252,250,0.85)),
+        url('assets/cta_bg.png') center/cover no-repeat;
     }
     .cta-section .wrap { position: relative; }
     .cta-section h2 { margin-bottom: 14px; }
@@ -443,7 +436,7 @@
         </div>
         <div class="hero-visual reveal">
           <div class="watch-frame">
-            <img src="assets/score_screen.png" alt="TennisScoreのスコア画面">
+            <img src="assets/watch_lifestyle.png" alt="テニスコートでスマートウォッチを使う様子">
           </div>
           <div class="hero-float-badge b1">&#x1F3BE; タップで加点</div>
           <div class="hero-float-badge b2">&#x21A9;&#xFE0F; スワイプで戻す</div>
@@ -683,7 +676,8 @@
       ["TennisScoreの操作説明スクリーンショット", "TennisScore control explanation screenshot"],
       ["TennisScoreのカスタマイズ説明スクリーンショット", "TennisScore customization explanation screenshot"],
       ["TennisScoreの紹介ビジュアル", "TennisScore promotional visual"],
-      ["TennisScoreのスコア画面", "TennisScore score screen"]
+      ["TennisScoreのスコア画面", "TennisScore score screen"],
+      ["テニスコートでスマートウォッチを使う様子", "Using a smartwatch on a tennis court"]
     ]);
 
     const textNodes = [];
